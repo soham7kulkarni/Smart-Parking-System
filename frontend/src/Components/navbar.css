@@ -1,0 +1,12 @@
+.nv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* Ensure the navbar spans the full width */
+}
+
+.navbar-brand {
+    margin-left: auto;
+    /* Push the navbar-brand to the right */
+}

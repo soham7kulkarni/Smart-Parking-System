@@ -1,0 +1,126 @@
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    /* Adjust the width */
+    height: auto;
+    /* Set height to auto */
+    background: #fff;
+    padding: 20px;
+    /* Add some padding for space */
+    border-radius: 10px;
+    /* Add border radius for rounded corners */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    /* Add box shadow for depth */
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    margin-top: "30px";
+}
+
+.text {
+    color: #FE5F55;
+    font-size: 32px;
+    /* Adjust font size */
+    font-weight: 700;
+}
+
+.underlined {
+    width: 61px;
+    height: 6px;
+    background: #3c009d;
+    border-radius: 9px;
+}
+
+.inputs {
+    margin-top: 25px;
+    /* Adjust margin */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Adjust gap */
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    /* Adjust maximum width */
+    height: 60px;
+    /* Adjust height */
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.input img {
+    margin: 0px 20px;
+    /* Adjust margin */
+}
+
+.input input {
+    flex: 1;
+    /* Take remaining space */
+    height: 100%;
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 16px;
+    /* Adjust font size */
+}
+
+.submit-container {
+    display: flex;
+    gap: 20px;
+    /* Adjust gap */
+    margin-top: 30px;
+    /* Adjust margin */
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    /* Adjust width */
+    height: 40px;
+    /* Adjust height */
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 20px;
+    /* Adjust border radius */
+    font-size: 16px;
+    /* Adjust font size */
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gray {
+    background: #eaeaea;
+    color: #676767;
+}
+
+.forgot-password{
+    padding-left: 10px;
+    margin-top: 25px;
+    color: #797979;
+    font-size: 18px;
+}
+
+.forgot-password span {
+    color: #4c00b4;
+    cursor: pointer;
+}
+
