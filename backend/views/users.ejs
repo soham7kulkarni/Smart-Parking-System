@@ -1,0 +1,20 @@
+<!-- users.ejs -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User List</title>
+</head>
+
+<body>
+    <h1>User List</h1>
+    <ul>
+        <% users.forEach(function(user) { %>
+            <li>
+                <%= user.user_id %> - <%= user.email %> - <%= user.password %> - <%= user.first_name %> - <%= user.last_name %>
+            </li>
+            <% }); %>
+    </ul>
+</body>
+
+</html>
