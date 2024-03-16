@@ -95,35 +95,53 @@ router.post("/login", function(request, response, next){
         }
     });
 });
-
-router.get("/lots", function(request, response, next){
-
-    // var location = request.body.location
+router.get("/lots/:lotId", function(request, response, next){
 
     // Fetching top 3 parking lots which are near to the location (Maps API)
 
+    const { lotId } = request.params;
+
     var query = `
-    SELECT 
-        lot_id,
-        COUNT(CASE WHEN status = 'Available' THEN 1 END) AS available_spots_count
-    FROM spot
-    GROUP BY lot_id;
+        SELECT 
+            lot_id,
+            level,
+            COUNT(CASE WHEN status = 'Available' THEN 1 END) AS available_spots_count
+        FROM 
+            spot
+        WHERE
+            lot_id = '${lotId}'
+        GROUP BY 
+            lot_id, level
+        ORDER BY 
+            lot_id, level;
     `;
 
-    database.query(query, function(error, data){
+     database.query(query, function(error, data){
 
-        if (error)
-        {
+        if (error) {
             throw error;
-        } 
-        else
-        {
-            response.send({ message: "Available lots", user: data});
+        } else {
+            // Initialize available spots array
+            const availableSpots = [];
+
+            // Loop through data and push available spots count to the array
+            data.forEach(row => {
+                availableSpots.push(row.available_spots_count);
+            });
+
+            // Prepare response object
+            const responseObject = {
+                numLevels: data.length, // Assuming data.length represents the number of levels
+                availableSpots: availableSpots
+            };
+
+            response.send(responseObject);
         }
 
     });
 
 });
+
 
 router.post("/reserve", function(request, response, next){
 

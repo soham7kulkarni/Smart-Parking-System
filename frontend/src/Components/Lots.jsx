@@ -9,11 +9,22 @@ import image3 from "./Assets/Lot3.jpg";
 
 const Lots = () => {
   const [selectedLot, setSelectedLot] = useState(null);
+
   const navigate = useNavigate();
 
-  const handleLotClick = async (lotId) => {
-    setSelectedLot(lotId);
-    navigate("/Spots");
+  const handleLotClick = async (lot) => {
+    navigate(`/Spots/${lot}`)
+    // try {
+    //   await axios.get(`http://localhost:5000/lots/${lot}`).then((response) => {
+    //     const { numLevels, availableSpots } = response.data;
+    //     console.log(numLevels)
+    //     setNumLevels(numLevels);
+    //     setAvailableSpots(availableSpots);
+    //     navigate('/Spots', { state: { numLevels, availableSpots } });
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   return (
@@ -22,7 +33,7 @@ const Lots = () => {
         <div className="col-md-4 mb-4">
           <div
             className="card h-100"
-            onClick={() => handleLotClick(1)}
+            onClick={() => handleLotClick("LOT001")}
             style={{ width: "100%" }}
           >
             <img src={image1} className="card-img-top" alt="Lot 1" />
@@ -35,7 +46,7 @@ const Lots = () => {
         <div className="col-md-4 mb-4">
           <div
             className="card h-100"
-            onClick={() => handleLotClick(2)}
+            onClick={() => handleLotClick("LOT002")}
             style={{ width: "100%" }}
           >
             <img src={image2} className="card-img-top" alt="Lot 2" />
@@ -48,7 +59,7 @@ const Lots = () => {
         <div className="col-md-4 mb-4">
           <div
             className="card h-100"
-            onClick={() => handleLotClick(3)}
+            onClick={() => handleLotClick("LOT003")}
             style={{ width: "100%" }}
           >
             <img src={image3} className="card-img-top" alt="Lot 3" />
