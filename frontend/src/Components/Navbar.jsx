@@ -1,31 +1,40 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import "./navbar.css";
+"use client";
 
-const Navbar = () => {
+import { Box, Flex, HStack, Button, useColorModeValue } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+export default function Navbar() {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/login"); // Redirect to '/login' route
+  const handleLoginClick = () => {
+    navigate("/login");
   };
-
   return (
-    <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="nv">
-          <div className="navbar-nav mr-auto">
-            {/* Use mr-auto to push the Login button to the left */}
-            <div className="navbar-brand" href="http://localhost:3000/">
-              SPS
-            </div>
-            <button className="btn btn-primary" onClick={handleClick}>
+    <>
+      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4} py={1}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+          <HStack spacing={8} alignItems={"center"}>
+            <Box>SPS</Box>
+          </HStack>
+          <Flex alignItems={"center"}>
+            <Button
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"white"}
+              bg={"blue.400"}
+              onClick={handleLoginClick}
+              _hover={{
+                bg: "blue.300",
+              }}
+              rounded={"md"}
+              _focus={{
+                outline: "none",
+              }}
+            >
               Login
-            </button>
-          </div>
-        </div>
-      </nav>
-    </div>
+            </Button>
+          </Flex>
+        </Flex>
+      </Box>
+    </>
   );
-};
-
-export default Navbar;
+}

@@ -1,5 +1,5 @@
 .container {
-    position: absolute;
+    /* position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -9,15 +9,15 @@
     align-items: center;
     width: 400px;
     /* Adjust the width */
-    height: auto;
+    /* height: auto; */
     /* Set height to auto */
-    background: #fff;
-    padding: 20px;
+    /* background: #fff; */
+    /* padding: 20px; */
     /* Add some padding for space */
-    border-radius: 10px;
+    /* border-radius: 10px; */
     /* Add border radius for rounded corners */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    /* Add box shadow for depth */
+    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); */
+    /* Add box shadow for depth */ 
 }
 
 .header {

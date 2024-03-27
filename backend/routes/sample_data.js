@@ -24,12 +24,14 @@ router.get("/", function(request, response, next){
 
 });
 
-router.post("/register", function(request, response, next){
+router.post("/signup", function(request, response, next){
 
     var email = request.body.email;
     var password = request.body.password;
     var first_name = request.body.first_name;
     var last_name = request.body.last_name;
+
+    console.log("Hello",request.body.email)
 
     var query = `
     INSERT INTO users 
@@ -184,7 +186,6 @@ router.post("/reserve", function(request, response, next){
         else
         {
             response.send("successful registration");
-
         }
 
     });

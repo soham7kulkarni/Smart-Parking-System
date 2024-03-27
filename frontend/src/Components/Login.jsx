@@ -1,18 +1,32 @@
+"use client";
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import user_icon from "./Assets/person.png";
-import email_icon from "./Assets/email.png";
-import password_icon from "./Assets/password.png";
+import {
+  Flex,
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Checkbox,
+  Stack,
+  Button,
+  Heading,
+  Text,
+  Link,
+  useColorModeValue,
+} from "@chakra-ui/react";
 
-const Login = () => {
+
+export default function Login() {
+
   const navigate = useNavigate();
+  const [formData, setFormData] = useState();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const handleSignUpClick = () => {
+    navigate("/Signup");
+  };
 
   const handleInputChange = (e) => {
     e.preventDefault();
@@ -26,61 +40,70 @@ const Login = () => {
         .then((response) => {
           console.log(response);
         });
-        navigate("/Search");
+      navigate("/Search");
       // Handle successful login
     } catch (error) {
       // Handle login error
     }
   };
 
-  const handleRegister = () => {
-    navigate("/Signup");
-  };
-
   return (
-    <div className="container">
-      <div className="header">
-        <div className="text">Login</div>
-        <div className="underlined"> </div>
-      </div>
-      <div className="inputs">
-        <div className="input">
-          <img src={email_icon} alt="" />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="input">
-          <img src={password_icon} alt="" />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-      <div className="forgot-password">
-        Can't remember password? <span>Click here!</span>
-      </div>
-      <div className="submit-container">
-        <div>
-          <button onClick={handleLogin}>Login</button>
-        </div>
-        <div>
-          <div>
-            Don't have an account?{" "}
-            <button onClick={handleRegister}>Register</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Flex
+      minH={"100vh"}
+      align={"center"}
+      justify={"center"}
+      bg={useColorModeValue("gray.50", "gray.800")}
+    >
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={5}>
+        <Stack align={"center"}>
+          <Heading fontSize={"4xl"}>Log in to your account</Heading>
+        </Stack>
+        <Box
+          rounded={"lg"}
+          bg={useColorModeValue("white", "gray.700")}
+          boxShadow={"lg"}
+          p={8}
+        >
+          <Stack spacing={4}>
+            <FormControl id="email">
+              <FormLabel>Email address</FormLabel>
+              <Input type="email" onChange={handleInputChange} />
+            </FormControl>
+            <FormControl id="password">
+              <FormLabel>Password</FormLabel>
+              <Input type="password" onChange={handleInputChange} />
+            </FormControl>
+            <Stack spacing={5}>
+              <Stack
+                direction={{ base: "column", sm: "row" }}
+                align={"start"}
+                justify={"space-between"}
+              >
+                <Checkbox>Remember me</Checkbox>
+                <Text color={"blue.400"}>Forgot password?</Text>
+              </Stack>
+              <Button
+                bg={"blue.400"}
+                color={"white"}
+                _hover={{
+                  bg: "blue.500",
+                }}
+                px={20}
+                py={2}
+                onClick={handleLogin}
+              >
+                Log in
+              </Button>
+              <Text align={"center"}>
+                Not an existing user?{" "}
+                <Link color={"blue.400"} onClick={handleSignUpClick}>
+                  Sign up
+                </Link>
+              </Text>
+            </Stack>
+          </Stack>
+        </Box>
+      </Stack>
+    </Flex>
   );
-};
-
-export default Login;
+}

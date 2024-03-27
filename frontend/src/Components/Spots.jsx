@@ -23,6 +23,7 @@ const Spots = (props) => {
     const getLot = async () => {
     try {
       await axios.get(`http://localhost:5000/lots/${id}`).then((response) => {
+
         const { numLevels, availableSpots } = response.data;
         console.log(numLevels);
         setNumLevels(numLevels);

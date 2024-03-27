@@ -13,59 +13,70 @@ const Lots = () => {
   const navigate = useNavigate();
 
   const handleLotClick = async (lot) => {
-    navigate(`/Spots/${lot}`)
-    // try {
-    //   await axios.get(`http://localhost:5000/lots/${lot}`).then((response) => {
-    //     const { numLevels, availableSpots } = response.data;
-    //     console.log(numLevels)
-    //     setNumLevels(numLevels);
-    //     setAvailableSpots(availableSpots);
-    //     navigate('/Spots', { state: { numLevels, availableSpots } });
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    navigate(`/Spots/${lot}`);
+    // Handle navigation to the spot
   };
 
   return (
-    <div className="container" style={{ maxWidth: "100%", padding: "0 15px" }}>
+    <div className="container mt-4">
       <div className="row">
         <div className="col-md-4 mb-4">
-          <div
-            className="card h-100"
-            onClick={() => handleLotClick("LOT001")}
-            style={{ width: "100%" }}
-          >
-            <img src={image1} className="card-img-top" alt="Lot 1" />
-            <div className="card-body">
+          <div className="card h-100">
+            <img
+              src={image1}
+              className="card-img-top"
+              alt="Lot 1"
+              style={{ objectFit: "cover", height: "200px" }}
+            />
+            <div className="card-body" style={{ minHeight: "100px" }}>
               <h5 className="card-title">Lot 1</h5>
               <p className="card-text">Count of Lot 1</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => handleLotClick("LOT001")}
+              >
+                View Details
+              </button>
             </div>
           </div>
         </div>
         <div className="col-md-4 mb-4">
-          <div
-            className="card h-100"
-            onClick={() => handleLotClick("LOT002")}
-            style={{ width: "100%" }}
-          >
-            <img src={image2} className="card-img-top" alt="Lot 2" />
-            <div className="card-body">
+          <div className="card h-100">
+            <img
+              src={image2}
+              className="card-img-top"
+              alt="Lot 2"
+              style={{ objectFit: "cover", height: "200px" }}
+            />
+            <div className="card-body" style={{ minHeight: "100px" }}>
               <h5 className="card-title">Lot 2</h5>
               <p className="card-text">Count of Lot 2</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => handleLotClick("LOT002")}
+              >
+                View Details
+              </button>
             </div>
           </div>
         </div>
         <div className="col-md-4 mb-4">
-          <div
-            className="card h-100"
-            onClick={() => handleLotClick("LOT003")}
-            style={{ width: "100%" }}
-          >
-            <img src={image3} className="card-img-top" alt="Lot 3" />
-            <div className="card-body">
+          <div className="card h-100">
+            <img
+              src={image3}
+              className="card-img-top"
+              alt="Lot 3"
+              style={{ objectFit: "cover", height: "200px" }}
+            />
+            <div className="card-body" style={{ minHeight: "100px" }}>
               <h5 className="card-title">Lot 3</h5>
               <p className="card-text">Count of Lot 3</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => handleLotClick("LOT003")}
+              >
+                View Details
+              </button>
             </div>
           </div>
         </div>

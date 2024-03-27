@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+
 
 const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,7 +17,6 @@ const Homepage = () => {
 
   return (
     <div className="abs">
-      <Navbar />
       <div className="inputs">
         <div className="row">
           <div className="col text-center">
