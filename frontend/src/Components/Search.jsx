@@ -1,9 +1,14 @@
-import React from 'react'
+import React from "react";
+import MapComponent from "./Map";
 
-const Search = () => {
+
+const Search = ({ google }) => {
+
   return (
-    <div>Search</div>
-  )
-}
+    <div style={{ height: "70vh", width: "70%", position: "relative" }}>
+      <MapComponent />
+    </div>
+  );
+};
 
 export default Search;

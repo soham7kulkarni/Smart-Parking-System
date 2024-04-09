@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import axios from "./axiosConfig";
 
 const Spots = (props) => {
-  const {id}= useParams()
+    const {id} = useParams()
+    console.log(id);
     const [numLevels, setNumLevels] = useState(null);
     const [availableSpots, setAvailableSpots] = useState(null);
 
-  // console.log(numLevels);
-  console.log(id);
-  // console.log(availableSpots);
+  console.log(numLevels);
+  console.log(`http://localhost:5000/Spots/${id}`);
+  console.log(availableSpots);
 
   const navigate = useNavigate();
 
@@ -22,7 +23,7 @@ const Spots = (props) => {
   useEffect(()=>{
     const getLot = async () => {
     try {
-      await axios.get(`http://localhost:5000/lots/${id}`).then((response) => {
+      await axios.get(`http://localhost:5000/Spots/${id}`).then((response) => {
 
         const { numLevels, availableSpots } = response.data;
         console.log(numLevels);

@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "./axiosConfig";
 import { useNavigate } from "react-router-dom";
-
 import {
   Flex,
   Box,
@@ -18,9 +17,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 
-
 export default function Login() {
-
   const navigate = useNavigate();
   const [formData, setFormData] = useState();
 
@@ -33,19 +30,23 @@ export default function Login() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
-    try {
-      await axios
-        .post("http://localhost:5000/login", formData)
-        .then((response) => {
-          console.log(response);
-        });
-      navigate("/Search");
-      // Handle successful login
-    } catch (error) {
-      // Handle login error
+const handleLogin = async () => {
+  try {
+    const response = await axios.post("http://localhost:5000/login", formData);
+
+    const token = response.data.token;
+    localStorage.setItem("token", token);
+    localStorage.setItem("isLoggedIn", true); // Set isLoggedIn to true upon successful login
+    navigate("/Search");
+  } catch (error) {
+    // If the error response status is 401, it indicates wrong password
+    if (error.response && error.response.status === 401) {
+      alert("Wrong password. Please try again."); // Display alert for wrong password
+    } else {
+      console.error("Login failed:", error);
     }
-  };
+  }
+};
 
   return (
     <Flex
@@ -67,11 +68,15 @@ export default function Login() {
           <Stack spacing={4}>
             <FormControl id="email">
               <FormLabel>Email address</FormLabel>
-              <Input type="email" onChange={handleInputChange} />
+              <Input type="email" name="email" onChange={handleInputChange} />
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" onChange={handleInputChange} />
+              <Input
+                type="password"
+                name="password"
+                onChange={handleInputChange}
+              />
             </FormControl>
             <Stack spacing={5}>
               <Stack

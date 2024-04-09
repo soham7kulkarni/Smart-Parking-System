@@ -1,88 +1,199 @@
-import React from "react";
-import axios from "axios";
-import Spots from "./Spots";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import image1 from "./Assets/Lot1.jpg";
-import image2 from "./Assets/Lot2.jpg";
-import image3 from "./Assets/Lot3.jpg";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "./axiosConfig";
+import {
+  Box,
+  Center,
+  Heading,
+  Text,
+  Stack,
+  Avatar,
+  useColorModeValue,
+  Button,
+} from "@chakra-ui/react";
+import D from "./Assets/D.jpeg"; // Import the image using a relative path
 
-const Lots = () => {
-  const [selectedLot, setSelectedLot] = useState(null);
+// const LotWithImage = (props) => {
+//   const { id } = useParams();
+//   console.log(id);
+//   const [numLevels, setNumLevels] = useState(null);
+//   const [availableSpots, setAvailableSpots] = useState(null);
+//   const [img, setImg] = useState();
+
+//   const navigate = useNavigate();
+
+//   console.log(numLevels);
+//   console.log(`http://localhost:5000/Spots/${id}`);
+//   console.log(availableSpots);
+
+//   useEffect(() => {
+//     const getLot = async () => {
+//       try {
+//         await axios.get(`http://localhost:5000/lots/${id}`).then((response) => {
+//           const { numLevels, availableSpots } = response.data;
+//           console.log(response.data);
+//           setNumLevels(numLevels);
+//           setAvailableSpots(availableSpots);
+//           setImg(response.data.image);
+//         });
+//       } catch (error) {
+//         console.log(error);
+//       }
+//     };
+
+//     getLot();
+//   }, []);
+
+//   return (
+//     <Center py={6}>
+//       <Box
+//         maxW={"445px"}
+//         w={"full"}
+//         bg={useColorModeValue("white", "gray.900")}
+//         boxShadow={"2xl"}
+//         rounded={"md"}
+//         p={6}
+//         overflow={"hidden"}
+//       >
+//         <Box
+//           h={"210px"} // Adjusted the height to fit the image
+//           bg={"gray.100"}
+//           mt={-6}
+//           mx={-6}
+//           mb={6}
+//           pos={"relative"}
+//         >
+//           <img
+//             src={img}
+//             style={{ width: "100%", height: "100%", objectFit: "cover" }} // Ensure the image fits within its container
+//             alt="Example"
+//           />
+//         </Box>
+//         <Stack>
+//           <Text
+//             color={"green.500"}
+//             textTransform={"uppercase"}
+//             fontWeight={800}
+//             fontSize={"sm"}
+//             letterSpacing={1.1}
+//           >
+//             {id}
+//           </Text>
+//           <Heading
+//             color={useColorModeValue("gray.700", "white")}
+//             fontSize={"2xl"}
+//             fontFamily={"body"}
+//           >
+//             Available Spots on each level
+//           </Heading>
+//           <ul>
+//             {Array.from({ length: numLevels }, (_, index) => (
+//               <li key={index}>
+//                 Level {index + 1} - {availableSpots[index]}
+//               </li>
+//             ))}
+//           </ul>
+//           <Button colorScheme="blue" onClick={() => navigate("/Book")}>
+//             Book
+//           </Button>
+//         </Stack>
+//       </Box>
+//     </Center>
+//   );
+// };
+
+// export default LotWithImage;
+
+const LotWithImage = (props) => {
+  const { id } = useParams();
+  const [numLevels, setNumLevels] = useState(null);
+  const [availableSpots, setAvailableSpots] = useState(null);
+  const [img, setImg] = useState(null); // Changed initial value to null
 
   const navigate = useNavigate();
 
-  const handleLotClick = async (lot) => {
-    navigate(`/Spots/${lot}`);
-    // Handle navigation to the spot
+  const handleClickBook = (id) => {
+    console.log(id);
+    // navigate(`/spots/${encodeURIComponent(parkingName)}`);
+    navigate(`/book/${id}`);
   };
 
+  useEffect(() => {
+    const getLot = async () => {
+      try {
+        await axios.get(`http://localhost:5000/lots/${id}`).then((response) => {
+          const { numLevels, availableSpots, image } = response.data;
+          console.log(response.data);
+          setNumLevels(numLevels);
+          setAvailableSpots(availableSpots);
+          setImg(image); // Set the image URL received from the backend
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getLot();
+  }, [id]); // Added id to the dependency array
+
   return (
-    <div className="container mt-4">
-      <div className="row">
-        <div className="col-md-4 mb-4">
-          <div className="card h-100">
+    <Center py={6}>
+      <Box
+        maxW={"445px"}
+        w={"full"}
+        bg={useColorModeValue("white", "gray.900")}
+        boxShadow={"2xl"}
+        rounded={"md"}
+        p={6}
+        overflow={"hidden"}
+      >
+        <Box
+          h={"210px"} // Adjusted the height to fit the image
+          bg={"gray.100"}
+          mt={-6}
+          mx={-6}
+          mb={6}
+          pos={"relative"}
+        >
+          {img && (
             <img
-              src={image1}
-              className="card-img-top"
-              alt="Lot 1"
-              style={{ objectFit: "cover", height: "200px" }}
+              src={img}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              alt="Example"
             />
-            <div className="card-body" style={{ minHeight: "100px" }}>
-              <h5 className="card-title">Lot 1</h5>
-              <p className="card-text">Count of Lot 1</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => handleLotClick("LOT001")}
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4 mb-4">
-          <div className="card h-100">
-            <img
-              src={image2}
-              className="card-img-top"
-              alt="Lot 2"
-              style={{ objectFit: "cover", height: "200px" }}
-            />
-            <div className="card-body" style={{ minHeight: "100px" }}>
-              <h5 className="card-title">Lot 2</h5>
-              <p className="card-text">Count of Lot 2</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => handleLotClick("LOT002")}
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4 mb-4">
-          <div className="card h-100">
-            <img
-              src={image3}
-              className="card-img-top"
-              alt="Lot 3"
-              style={{ objectFit: "cover", height: "200px" }}
-            />
-            <div className="card-body" style={{ minHeight: "100px" }}>
-              <h5 className="card-title">Lot 3</h5>
-              <p className="card-text">Count of Lot 3</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => handleLotClick("LOT003")}
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          )}
+        </Box>
+        <Stack>
+          <Text
+            color={"green.500"}
+            textTransform={"uppercase"}
+            fontWeight={800}
+            fontSize={"sm"}
+            letterSpacing={1.1}
+          >
+            {id}
+          </Text>
+          <Heading
+            color={useColorModeValue("gray.700", "white")}
+            fontSize={"2xl"}
+            fontFamily={"body"}
+          >
+            Available Spots on each level
+          </Heading>
+          <ul>
+            {Array.from({ length: numLevels }, (_, index) => (
+              <li key={index}>
+                Level {index + 1} - {availableSpots[index]}
+              </li>
+            ))}
+          </ul>
+          <Button colorScheme="blue" onClick={() => handleClickBook(id)}>
+            Book
+          </Button>
+        </Stack>
+      </Box>
+    </Center>
   );
 };
 
-export default Lots;
+export default LotWithImage;

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 
 import {
   Flex,
@@ -34,20 +34,23 @@ export default function Signup() {
   };
 
   const handleSignUp = async () => {
-    console.log(formData)
+try {
+  const response = await axios.post("http://localhost:5000/signup", formData);
+  console.log(response.data);
+  window.location.href = "/";
 
-    try {
-      await axios
-        .post("http://localhost:5000/signup", formData)
-        .then((response) => {
-          console.log(response.data);
-        });
-      navigate("/Search");
+} catch (error) {
+  console.error("Signup failed:", error);
+}
 
-      // Handle successful login
-    } catch (error) {
-      // Handle login error
-    }
+  //   try {
+  //   const response = await axios.post("http://localhost:5000/signup", formData);
+  //   // console.log(response.data);
+  // } catch (error) {
+  //     console.error("Signup failed:", error);
+  //   }
+
+  //   navigate("/")
   };
 
   const handleLoginClick = () => {

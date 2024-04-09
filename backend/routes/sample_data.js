@@ -1,8 +1,33 @@
 var express = require('express');
-
+const axios = require('axios')
 var router = express.Router();
 
 var database = require('../database');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
+
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+  console.log(token);
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  jwt.verify(token.split(' ')[1], process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    console.log(err);
+    if (err) {
+    
+      return res.status(403).json({ message: 'Failed to authenticate token' });
+    }
+    req.user = decoded;
+    console.log(decoded);
+    next();
+  });
+};
 
 router.get("/", function(request, response, next){
 
@@ -80,7 +105,7 @@ router.post("/login", function(request, response, next){
     WHERE email = "${email}" AND password = "${password}"
     `;
 
-    database.query(query, function(error, data){
+    database.query(query, async function(error, data){
         if (error)
         {
             throw error;
@@ -89,40 +114,56 @@ router.post("/login", function(request, response, next){
         {
             if (data.length > 0) 
             {
-                response.send({ message: "Successful login", user: data[0] });
+                const user = data[0];
+                const token = jwt.sign({
+                            user_id: user.user_id,
+                            email: user.email
+                        }, process.env.ACCESS_TOKEN_SECRET
+                        // { expiresIn: '24h' }
+                        );
+                    response.send({ message: "Successful login", token: token, user: user });
             } else 
             {
-                response.send("Couldn't find user");
+                response.status(404).send("Couldn't find user");
             }
         }
     });
 });
-router.get("/lots/:lotId", function(request, response, next){
+
+router.get("/lots/:id", verifyToken, function(request, response, next){
 
     // Fetching top 3 parking lots which are near to the location (Maps API)
 
-    const { lotId } = request.params;
+    const id  = request.params.id; // Extracting id from params directly
+    console.log(id);
+    console.log("Authenticated user:", request.user);
 
     var query = `
         SELECT 
-            lot_id,
-            level,
-            COUNT(CASE WHEN status = 'Available' THEN 1 END) AS available_spots_count
+            s.lot_id,
+            s.level,
+            COUNT(CASE WHEN s.status = 'Available' THEN 1 END) AS available_spots_count,
+            l.image
         FROM 
-            spot
+            spot s
+        JOIN
+            lot l ON s.lot_id = l.lot_id
         WHERE
-            lot_id = '${lotId}'
+            s.lot_id = '${id}'
         GROUP BY 
-            lot_id, level
+            s.lot_id, s.level, l.image
         ORDER BY 
-            lot_id, level;
+            s.lot_id, s.level;
     `;
+    
+    console.log(query);
 
-     database.query(query, function(error, data){
+    database.query(query, function(error, data){
 
         if (error) {
             throw error;
         } else {
+            console.log(data);
             // Initialize available spots array
             const availableSpots = [];
 
@@ -134,7 +175,8 @@ router.get("/lots/:lotId", function(request, response, next){
             // Prepare response object
             const responseObject = {
                 numLevels: data.length, // Assuming data.length represents the number of levels
-                availableSpots: availableSpots
+                availableSpots: availableSpots,
+                image: data.length > 0 ? data[0].image : null // Assuming there's only one image per lot
             };
 
             response.send(responseObject);
@@ -143,6 +185,33 @@ router.get("/lots/:lotId", function(request, response, next){
     });
 
 });
+
+router.post("/create-checkout-session",async(req,res)=>{
+    const {products} = req.body;
+
+    console.log("Product", products);
+
+    const lineItems = products.map((product) => ({
+        price_data: {
+            currency:"usd",
+            product_data:{
+                name:product.id
+            },
+            unit_amount:product.totalPrice * 100,
+        },
+        quantity:1
+    }));
+
+        const session = await stripe.checkout.sessions.create({
+        payment_method_types:["card"],
+        line_items:lineItems,
+        mode:"payment",
+        success_url:"http://localhost:3000/success",
+        cancel_url:"http://localhost:3000/cancel",
+    });
+
+    res.json({id:session.id});
+})
 
 
 router.post("/reserve", function(request, response, next){
@@ -192,5 +261,24 @@ router.post("/reserve", function(request, response, next){
 
 });
 
+
+router.post('/api/fetchNearbyParking', async (req, res) => {
+  const { lat, lng } = req.body;
+  console.log(req.body)
+  try {
+    const response = await axios.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', {
+      params: {
+        location: `${lat},${lng}`,
+        key: process.env.GOOGLE_MAPS_API_KEY, // Replace with your actual API key
+        type: 'parking',
+        radius: 1600,
+      },
+    });
+    
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 module.exports = router;
