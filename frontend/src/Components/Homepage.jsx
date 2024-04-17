@@ -1,18 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const Homepage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState();
   const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const login = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(login);
+  }, []);
+
   const handleNewBookingClick = () => {
-    navigate("/lots");
+    console.log(isLoggedIn);
+    if (isLoggedIn === "true") {
+      navigate("/Search");
+    } else {
+      navigate("/login");
+    }
   };
 
   const handlePreviousBookingClick = () => {
-    navigate("/previous-bookigs");
+    if (isLoggedIn === "true") {
+      navigate("/previous-bookigs");
+    } else {
+      navigate("/login");
+    }
   };
 
   return (

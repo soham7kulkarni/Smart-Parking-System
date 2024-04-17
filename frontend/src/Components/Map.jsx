@@ -44,7 +44,7 @@ const MapComponent = () => {
   };
 
   const handleSearch = (temp) => {
-    debugger;
+    // debugger;
     axios
       .get(`https://maps.googleapis.com/maps/api/geocode/json`, {
         params: {

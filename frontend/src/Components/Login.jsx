@@ -15,11 +15,16 @@ import {
   Text,
   Link,
   useColorModeValue,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+
 
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState();
+  const [showPassword, setShowPassword] = useState();
 
   const handleSignUpClick = () => {
     navigate("/Signup");
@@ -72,11 +77,23 @@ const handleLogin = async () => {
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input
-                type="password"
-                name="password"
-                onChange={handleInputChange}
-              />
+              <InputGroup>
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  onChange={handleInputChange}
+                />
+                <InputRightElement h={"full"}>
+                  <Button
+                    variant={"ghost"}
+                    onClick={() =>
+                      setShowPassword((showPassword) => !showPassword)
+                    }
+                  >
+                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
             <Stack spacing={5}>
               <Stack
