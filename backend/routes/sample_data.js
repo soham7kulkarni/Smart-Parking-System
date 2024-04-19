@@ -130,6 +130,7 @@ router.post("/login", function(request, response, next){
     });
 });
 
+
 router.get("/lots/:id", verifyToken, function(request, response, next){
 
     // Fetching top 3 parking lots which are near to the location (Maps API)

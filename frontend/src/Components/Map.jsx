@@ -113,6 +113,7 @@ const MapComponent = () => {
         return distanceA - distanceB;
       });
       // Select the top 3 parkings
+      console.log(sortedParking)
       const topThreeParking = sortedParking.slice(0, 3);
       setParkingResults(topThreeParking);
       // Handle response.data as needed

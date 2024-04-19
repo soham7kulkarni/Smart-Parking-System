@@ -44,9 +44,7 @@ const Book = (props) => {
   // Handle payment logic here
   console.log("Payment processing...");
 
-  const stripe = await loadStripe(
-    "pk_test_51Ou6guP5QhqipUFQTwjBn3ZFTIYgUnNnWuov6M3JvTMnUxXDdrsnE00qjM2SZN2yiZre40w7xGbDx5LAdbWFgNMI00C0JGF1cW"
-  );
+  const stripe = await loadStripe(process.env.STRIPE_PUBLIC_KEY);
 
   // Calculate total duration
   const totalDuration = calculateDuration(startTime, endTime);
