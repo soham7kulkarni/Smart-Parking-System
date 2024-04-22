@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import './Homepage.css';
 
 const Homepage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState();
-  const [showLogin, setShowLogin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +12,6 @@ const Homepage = () => {
   }, []);
 
   const handleNewBookingClick = () => {
-    console.log(isLoggedIn);
     if (isLoggedIn === "true") {
       navigate("/Search");
     } else {
@@ -22,26 +21,31 @@ const Homepage = () => {
 
   const handlePreviousBookingClick = () => {
     if (isLoggedIn === "true") {
-      navigate("/previous-bookigs");
+      navigate("/history");
     } else {
       navigate("/login");
     }
   };
 
   return (
-    <div className="abs">
+    <div className="center-screen">
       <div className="inputs">
         <div className="row">
           <div className="col text-center">
-            <button className="btn btn-primary" onClick={handleNewBookingClick}>
+            <button
+              className="btn btn-primary"
+              style={{
+                marginRight: "20px",
+                backgroundColor: "#3498db",
+                border: "none",
+              }}
+              onClick={handleNewBookingClick}
+            >
               New Booking
             </button>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col text-center">
             <button
               className="btn btn-secondary"
+              style={{ backgroundColor: "#2ecc71", border: "none" }}
               onClick={handlePreviousBookingClick}
             >
               Previous Booking

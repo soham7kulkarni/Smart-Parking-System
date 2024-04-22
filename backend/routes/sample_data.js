@@ -46,7 +46,6 @@ router.get("/", function(request, response, next){
             response.render('users', { users: data});
         }
 
-
     });
 
 });
@@ -119,7 +118,7 @@ router.post("/login", function(request, response, next){
                 const user = data[0];
                 const token = jwt.sign({
                             user_id: user.user_id,
-                            email: user.email
+                            email: user.email 
                         }, process.env.ACCESS_TOKEN_SECRET
                         // { expiresIn: '24h' }
                         );
@@ -214,6 +213,27 @@ router.get("/spots/:id", function(request, response, next){
         }
     });
 });
+
+router.get("/previous-bookings/:id", async (request, response, next) => {
+  const userId = request.params.id;
+  console.log("user", userId);
+
+  var query = `
+  SELECT * FROM reservation WHERE user_id = ${userId};`;
+
+  console.log(query);
+
+  database.query(query, function(error, data){
+    if (error) {
+      console.error("Error fetching previous bookings of user:", error);
+      response.status(error.status).send(error.message);
+    } else {
+      console.log(data);
+      response.json(data);
+    }
+  })
+});
+ 
 router.post("/create-checkout-session", async (req, res) => {
   try {
     const { products, reservation } = req.body;
@@ -281,49 +301,6 @@ router.post("/create-checkout-session", async (req, res) => {
     console.error("Error in /create-checkout-session:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-});
-
-
-router.post("/reserve", function(request, response, next){
-
-    var startTime = request.body.startTime;
-    var endTime = request.body.endTime;
-    var vehicleType = request.body.vehicleType;
-    var license = request.body.license;
-
-
-    var vehicleQuery = `
-    INSERT INTO vehicles
-    (license, vehcile_type)
-    VALUES("${license}", "${vehicleType}") 
-    `;
-
-    database.query(timeQuery, function(error, data){
-
-        if (error)
-        {
-            throw error;
-        }
-        else
-        {
-            response.send("successful record of timestamps");
-        }
-
-    });
-
-    database.query(vehicleQuery, function(error,data){
-
-        if (error)
-        {
-            throw error;
-        }
-        else
-        {
-            response.send("successful registration");
-        }
-
-    });
-
 });
 
 

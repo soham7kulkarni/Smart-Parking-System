@@ -11,6 +11,7 @@ import Book from './Components/Book';
 import Navbar from './Components/Navbar';
 import Success from "./Components/Success";
 import Cancel from "./Components/Cancel";
+import History from"./Components/History";
 import './App.css';
 import { useEffect } from "react";
 import LotWithImage from "./Components/Lots";
@@ -36,6 +37,7 @@ function App() {
               <Route path="/Payment" Component={Payment} />
               <Route path="/Success" Component={Success} />
               <Route path="/Cancel" Component={Cancel} />
+              <Route path = "/History" Component={History} />
               </Routes>
             </div>
           </UserProvider>

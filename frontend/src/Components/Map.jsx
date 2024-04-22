@@ -133,42 +133,85 @@ const MapComponent = () => {
   if (loadError) return "Error";
   if (!isLoaded) return "Maps";
   return (
-    <div style={{ marginTop: "30px" }}>
-      <div>
+    <div
+    // style={{ marginTop: "30px", marginBottom: "30px", textAlign: "center" }}
+    >
+      <div
+        style={{ marginTop: "30px", marginBottom: "20px", textAlign: "center" }}
+      >
         <input
           id="searchInput"
           type="text"
           value={searchInput}
           onChange={handleSearchInputChange}
+          onFocus={(e) => (e.target.style.border = "2px solid #3498db")}
+          onBlur={(e) =>
+            (e.target.style.border = `2px solid ${
+              searchInput ? "#3498db" : "#ccc"
+            }`)
+          }
           placeholder="Enter location"
+          style={{
+            padding: "10px",
+            border: `2px solid ${searchInput ? "#3498db" : "#ccc"}`,
+            borderRadius: "20px",
+            outline: "none",
+            marginRight: "10px",
+            marginBottom: "10px",
+            width: "300px",
+          }}
         />
-        <button onClick={handleSearch}>Search</button>
+        <button
+          onClick={handleSearch}
+          style={{
+            padding: "10px 20px",
+            border: "2px solid #3498db",
+            borderRadius: "20px",
+            backgroundColor: "#3498db",
+            color: "white",
+            cursor: "pointer",
+            marginBottom: "10px",
+          }}
+        >
+          Search
+        </button>
       </div>
-      <GoogleMap
-        mapContainerStyle={{
-          height: "800px",
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "500px",
+          marginLeft: "300px"
         }}
-        center={center}
-        zoom={14}
-        onLoad={onMapLoad}
       >
-        {parkingResults.map((parking, index) => (
-          <MarkerF
-            key={index}
-            position={{
-              lat: parking.geometry.location.lat,
-              lng: parking.geometry.location.lng,
-            }}
-            label={{
-              text: parking.name,
-              color: "black",
-              fontSize: "14px",
-              fontWeight: "bold",
-            }}
-            onClick={() => handleMarkerClick(parking.name)}
-          />
-        ))}
-      </GoogleMap>
+        <GoogleMap
+          mapContainerStyle={{
+            height: "100%",
+            width: "100%",
+          }}
+          center={center}
+          zoom={14}
+          onLoad={onMapLoad}
+        >
+          {parkingResults.map((parking, index) => (
+            <MarkerF
+              key={index}
+              position={{
+                lat: parking.geometry.location.lat,
+                lng: parking.geometry.location.lng,
+              }}
+              label={{
+                text: parking.name,
+                color: "black",
+                fontSize: "14px",
+                fontWeight: "bold",
+              }}
+              onClick={() => handleMarkerClick(parking.name)}
+            />
+          ))}
+        </GoogleMap>
+      </div>
     </div>
   );
 };

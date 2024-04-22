@@ -1,0 +1,39 @@
+/* History.css */
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 300px;
+}
+
+.card-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.card-button:hover {
+    background-color: #0056b3;
+}
