@@ -14,6 +14,7 @@ import Cancel from "./Components/Cancel";
 import './App.css';
 import { useEffect } from "react";
 import LotWithImage from "./Components/Lots";
+import { UserProvider } from "./Components/UserContext";
 
 function App() {
 
@@ -21,24 +22,25 @@ function App() {
     
       <Router>
         <AuthProvider>
-      <div>
-        <Navbar/>
-        <Routes>
-        <Route path="/" Component={Homepage} />
-        <Route path="/login" Component={Login} />
-        <Route path="/Signup" Component={Signup} />
-        <Route path="/Search" Component={Search} />
-        <Route path="/Lots/:id" Component={LotWithImage} />
-        <Route path="/Book/:id" Component={Book} />
-        <Route path="/Spots/:id" Component={Spots} />
-        <Route path="/Payment" Component={Payment} />
-        <Route path="/Success" Component={Success} />
-        <Route path="/Cancel" Component={Cancel} />
-        </Routes>
-
-      </div>
-      </AuthProvider>
-    </Router>
+          <UserProvider>
+            <div>
+              <Navbar/>
+              <Routes>
+              <Route path="/" Component={Homepage} />
+              <Route path="/login" Component={Login} />
+              <Route path="/Signup" Component={Signup} />
+              <Route path="/Search" Component={Search} />
+              <Route path="/Lots/:id" Component={LotWithImage} />
+              <Route path="/Book/:id" Component={Book} />
+              <Route path="/Spots/:id" Component={Spots} />
+              <Route path="/Payment" Component={Payment} />
+              <Route path="/Success" Component={Success} />
+              <Route path="/Cancel" Component={Cancel} />
+              </Routes>
+            </div>
+          </UserProvider>
+        </AuthProvider>
+      </Router>
     
     
   );

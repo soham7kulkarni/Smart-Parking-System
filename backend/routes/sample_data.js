@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
+const bodyParser = require('body-parser');
+router.use(bodyParser.raw({ type: 'application/json' }));
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
@@ -187,32 +189,99 @@ router.get("/lots/:id", verifyToken, function(request, response, next){
 
 });
 
-router.post("/create-checkout-session",async(req,res)=>{
-    const {products} = req.body;
+router.get("/spots/:id", function(request, response, next){
+    const id = request.params.id;
+    console.log("spot", id);
 
-    console.log("Product", products);
+    var query = `
+    SELECT spot_id FROM spot
+    WHERE status = "Available" AND lot_id = '${id}'
+    LIMIT 1;`;
 
-    const lineItems = products.map((product) => ({
-        price_data: {
-            currency:"usd",
-            product_data:{
-                name:product.id
-            },
-            unit_amount:product.totalPrice * 100,
-        },
-        quantity:1
-    }));
+    console.log(query);
 
-        const session = await stripe.checkout.sessions.create({
-        payment_method_types:["card"],
-        line_items:lineItems,
-        mode:"payment",
-        success_url:"http://localhost:3000/success",
-        cancel_url:"http://localhost:3000/cancel",
+    database.query(query, function(error, data){
+        if (error) {
+            console.error(error);
+            response.status(500).send("Internal Server Error");
+        } else {
+            console.log(data);
+            if (data.length > 0) {
+                response.status(200).send({ spotID: data[0].spot_id });
+            } else {
+                response.status(404).send("Spot not found");
+            }
+        }
     });
+});
+router.post("/create-checkout-session", async (req, res) => {
+  try {
+    const { products, reservation } = req.body;
 
-    res.json({id:session.id});
-})
+    console.log("Products:", products);
+    console.log("Reservation:", reservation);
+
+    // Insert reservation details into the database
+    const query = `
+      INSERT INTO reservation (lot_id, spot_id, user_id, start_time, end_time, transaction_id, total_amount, type_of_vehicle, license)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    const { lot_id, spot_id, user_id, start_time, end_time, total_price, type_of_vehicle, license } = reservation[0];
+    const values = [lot_id, spot_id, user_id, start_time, end_time, "pending", total_price, type_of_vehicle, license];
+    console.log("user", user_id);
+    database.query(query, values, (error, result) => {
+      console.log(query);
+      if (error) {
+        console.error("Error storing booking details:", error);
+        return res.status(500).json({ error: "Failed to store booking details" });
+      }
+
+      // Fetch the last inserted ID
+      database.query('SELECT LAST_INSERT_ID() as reservation_id', (selectError, selectResult) => {
+        if (selectError) {
+          console.error("Error fetching reservation ID:", selectError);
+          return res.status(500).json({ error: "Failed to fetch reservation ID" });
+        }
+
+        const reservationID = selectResult[0].reservation_id;
+        console.log("reservation",reservationID);
+        console.log("Booking details stored successfully!");
+
+        // Create Stripe checkout session
+        const lineItems = products.map((product) => ({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: product.id.toString(),
+            },
+            unit_amount: product.totalPrice * 100,
+          },
+          quantity: 1,
+        }));
+
+        stripe.checkout.sessions.create({
+          payment_method_types: ["card"],
+          line_items: lineItems,
+          mode: "payment",
+          success_url: "http://localhost:3000/success",
+          cancel_url: "http://localhost:3000/cancel",
+          metadata: {
+            reservation_id: reservationID
+          },
+        }).then((session) => {
+          res.json({ id: session.id, reservation_id: reservationID }); // Send reservation_id in the response
+        }).catch((stripeError) => {
+          console.error("Error creating Stripe checkout session:", stripeError);
+          res.status(500).json({ error: "Failed to create checkout session" });
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Error in /create-checkout-session:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 router.post("/reserve", function(request, response, next){
@@ -222,11 +291,6 @@ router.post("/reserve", function(request, response, next){
     var vehicleType = request.body.vehicleType;
     var license = request.body.license;
 
-    var timeQuery = `
-    INSERT INTO reservation
-    (reservation_id, lot_id, spot_id, user_id, start_time, end_time, paid, transaction_id, total_amount)
-    VALUES(1, "LOT001", 3, 3, ${startTime}, ${endTime}, 1, "TRANS219", 20)
-    `;
 
     var vehicleQuery = `
     INSERT INTO vehicles
@@ -242,7 +306,7 @@ router.post("/reserve", function(request, response, next){
         }
         else
         {
-             response.send("successful record of timestamps");
+            response.send("successful record of timestamps");
         }
 
     });
@@ -281,5 +345,84 @@ router.post('/api/fetchNearbyParking', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+const endpointSecret = process.env.REACT_APP_ENDPOINT_SECRET;
+
+router.post('/webhook', function(request, response) {
+  const sig = request.headers['stripe-signature'];
+  const body = request.body;  
+  console.log("body:",body)  
+  //console.log(sig)
+//   console.log(request.body.payload);
+
+  let event = null;
+
+  try {
+    event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
+    console.log("event:",event);
+  } catch (err) {
+    console.log("err", err);
+    // invalid signature
+    response.status(400).end();
+    return;
+  }
+
+  let intent = null;
+  switch (event['type']) {
+    case 'checkout.session.completed':
+      intent = event.data.object;
+      console.log("Succeeded:", intent.id);
+      const pid = intent.id;
+      console.log(pid)
+      updateTransactionId(pid, intent.metadata.reservation_id);
+      console.log("Transaction ID updated SUCCESSFULLY!!!!!!");
+      updateSpotStatus(intent.metadata.reservation_id);
+      console.log("Successfully updated spot Status");
+      break;
+    case 'payment_intent.payment_failed':
+      intent = event.data.object;
+      const message = intent.last_payment_error && intent.last_payment_error.message;
+      console.log('Failed:', intent.id, message);
+      break;
+  }
+
+  response.sendStatus(200);
+});
+
+
+function updateTransactionId(transactionId, reservationId) {
+    const query = `UPDATE reservation SET transaction_id = ? WHERE reservation_id = ?`;
+    database.query(query, [transactionId, reservationId], (error, result) => {
+      console.log(query);
+      console.log(transactionId);
+      console.log("reservation id is", reservationId);
+        if (error) {
+            console.error("Error updating transaction ID:", error);
+        } else {
+            console.log("Transaction ID updated successfully!");
+        }
+    });
+    console.log("exiting function!!");
+}
+
+function updateSpotStatus(reservationId) {
+  const query = `UPDATE spot 
+    SET status = "Occupied" 
+    WHERE spot_id = (
+    SELECT spot_id 
+    FROM reservation 
+    WHERE reservation_id = ?
+    );`;
+    database.query(query, [reservationId], (error, result) => {
+    
+    console.log("Starting to update status")
+    if (error) {
+            console.error("Error updating spot table:", error);
+        } else {
+            console.log("spot table updated successfully!");
+        }
+  });
+  console .log("existing spot func");
+}
 
 module.exports = router;

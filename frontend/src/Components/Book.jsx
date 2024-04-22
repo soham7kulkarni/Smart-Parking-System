@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useNavigate, useParams } from "react-router-dom";
+import { useUser } from "./UserContext";
+import axios from "axios";
 
 const Book = (props) => {
   const { id } = useParams();
@@ -8,23 +11,51 @@ const Book = (props) => {
   const [endTime, setEndTime] = useState("");
   const [typeOfVehicle, setTypeOfVehicle] = useState("");
   const [license, setLicense] = useState("");
+  const [spotId, setSpotId] = useState(null);
+
+    useEffect(() => {
+      const getSpot = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5000/spots/${id}`);
+          console.log(response.data);
+          const spotID = response.data.spotID;
+          setSpotId(spotID); // Set the spotId state
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      getSpot();
+    }, [id]);
+
+    console.log(spotId);
+
+    const userId = parseInt(localStorage.getItem("userID"), 10);
 
   const lotRates = {
-    "Parking D": 10.25,
-    LOT002: 9.25,
-    LOT003: 12.5,
-    LOT004: 9.25,
-    LOT005: 11.75,
-    LOT006: 10.5,
+    "2701 Nutwood Avenue Parking": 5.5,
+    "Cal State Fullerton Parking Lot I": 5,
+    "CSUF - Lot C West": 5.25,
+    "Eastside Parking Structure": 3.5,
+    "LOT A": 2.75,
+    "LOT A & G": 4,
+    "LOT A South": 5,
+    "LOT E": 1.5,
+    "LOT F": 1.75,
+    "LOT G": 3.5,
+    "LOT S": 2,
+    "Nutwood Parking Structure": 4,
+    "Parking D": 3,
+    "State College Parking Structure": 4.25,
   };
 
   const calculateDuration = (startTime, endTime) => {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  const durationInMillis = end - start;
-  const durationInHours = durationInMillis / (1000 * 60 * 60); // Convert milliseconds to hours
-  return durationInHours;
-};
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const durationInMillis = end - start;
+    const durationInHours = durationInMillis / (1000 * 60 * 60); // Convert milliseconds to hours
+    return durationInHours;
+  };
 
   // Function to calculate total price based on lot id and total duration
   const calculateTotalPrice = (lotId, totalDuration) => {
@@ -35,51 +66,91 @@ const Book = (props) => {
       // Handle case where lotId is not found in lotRates dictionary
       return 0;
     }
-}
+  };
 
   const makePayment = async () => {
+    console.log(startTime);
+    console.log(endTime);
 
-    console.log(startTime)
-    console.log(endTime)
-  // Handle payment logic here
-  console.log("Payment processing...");
+    // Handle payment logic here
+    console.log("Payment processing...");
+    
+    const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-  const stripe = await loadStripe(process.env.STRIPE_PUBLIC_KEY);
+    // Calculate total duration
+    const totalDuration = calculateDuration(startTime, endTime);
+    console.log(totalDuration);
 
-  // Calculate total duration
-  const totalDuration = calculateDuration(startTime, endTime);
-  console.log(totalDuration)
+    // Calculate total price
+    const totalPrice = calculateTotalPrice(id, totalDuration);
 
-  // Calculate total price
-  const totalPrice = calculateTotalPrice(id, totalDuration);
-
-  const body = {
-    products: [{ id: id, totalPrice: totalPrice }] // Pass id and totalPrice in the body
-  };
-
-  const headers = {
-    "Content-Type": "application/json",
-  };
-
-  const response = await fetch(
-    "http://localhost:5000/create-checkout-session",
+const bodyData = {
+  products: [{ id: id, totalPrice: totalPrice }],
+  reservation: [
     {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body),
-    }
-  );
-
-  const session = await response.json();
-
-  const result = stripe.redirectToCheckout({
-    sessionId: session.id,
-  });
-
-  if (result.error) {
-    console.log(result.error);
-  }
+      lot_id: id,
+      spot_id: spotId,
+      user_id: userId,
+      start_time: startTime,
+      end_time: endTime,
+      total_price: totalPrice,
+      type_of_vehicle: typeOfVehicle,
+      license: license,
+    },
+  ],
 };
+
+    console.log(bodyData);
+
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    const response = await fetch(
+      "http://localhost:5000/create-checkout-session",
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(bodyData),
+      }
+    );
+
+    const session = await response.json();
+
+    const result = stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      console.log(result.error);
+    }
+    // Payment succeeded, call backend API to store booking details
+    // const storeBookingResponse = await fetch(
+    //   "http:://localhost:5000/store-booking-details",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       id,
+    //       spot_id,
+    //       userId,
+    //       startTime,
+    //       endTime,
+    //       totalPrice,
+    //       typeOfVehicle,
+    //       license,
+    //     }),
+    //   }
+    // );
+
+    // if (storeBookingResponse.ok) {
+    //   console.log("Booking details stored successfully!");
+    // } else {
+    //   console.error("Failed to store booking details.");
+    // }
+  };
 
   return (
     <div className="container">

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import axios from "./axiosConfig";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 import {
   Flex,
   Box,
@@ -25,6 +26,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState();
   const [showPassword, setShowPassword] = useState();
+  const { setUserId } = useUser();
 
   const handleSignUpClick = () => {
     navigate("/Signup");
@@ -39,6 +41,10 @@ const handleLogin = async () => {
   try {
     const response = await axios.post("http://localhost:5000/login", formData);
 
+    const userId = response.data.user.user_id;
+    console.log(userId);
+    setUserId(userId);
+    localStorage.setItem("userID", userId);
     const token = response.data.token;
     localStorage.setItem("token", token);
     localStorage.setItem("isLoggedIn", true); // Set isLoggedIn to true upon successful login
