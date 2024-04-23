@@ -21,11 +21,11 @@ import {
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
-
 export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState();
-  const [showPassword, setShowPassword] = useState();
+  const [formData, setFormData] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const { setUserId } = useUser();
 
   const handleSignUpClick = () => {
@@ -33,31 +33,41 @@ export default function Login() {
   };
 
   const handleInputChange = (e) => {
-    e.preventDefault();
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleLogin = async () => {
-  try {
-    const response = await axios.post("http://localhost:5000/login", formData);
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/login",
+        formData
+      );
+      const userId = response.data.user.user_id;
+      console.log(userId);
+      setUserId(userId);
 
-    const userId = response.data.user.user_id;
-    console.log(userId);
-    setUserId(userId);
-    localStorage.setItem("userID", userId);
-    const token = response.data.token;
-    localStorage.setItem("token", token);
-    localStorage.setItem("isLoggedIn", true); // Set isLoggedIn to true upon successful login
-    navigate("/Search");
-  } catch (error) {
-    // If the error response status is 401, it indicates wrong password
-    if (error.response && error.response.status === 401) {
-      alert("Wrong password. Please try again."); // Display alert for wrong password
-    } else {
-      console.error("Login failed:", error);
+      const token = response.data.token;
+
+      if (rememberMe) {
+        localStorage.setItem("userID", userId);
+        localStorage.setItem("token", token);
+        localStorage.setItem("isLoggedIn", true);
+      } else {
+        sessionStorage.setItem("userID", userId);
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("isLoggedIn", true);
+      }
+
+      navigate("/Search");
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        alert("User not found. Please enter correct email and password.");
+      } else {
+        console.error("Login failed:", error);
+      }
     }
-  }
-};
+  };
+
 
   return (
     <Flex
@@ -92,9 +102,7 @@ const handleLogin = async () => {
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
+                    onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                   </Button>
@@ -107,7 +115,9 @@ const handleLogin = async () => {
                 align={"start"}
                 justify={"space-between"}
               >
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox onChange={(e) => setRememberMe(e.target.checked)}>
+                  Remember me
+                </Checkbox>
                 <Text color={"blue.400"}>Forgot password?</Text>
               </Stack>
               <Button

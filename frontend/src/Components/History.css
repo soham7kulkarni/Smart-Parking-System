@@ -11,6 +11,7 @@
     border-radius: 8px;
     overflow: hidden;
     width: 300px;
+    margin: 20px;
 }
 
 .card-header {

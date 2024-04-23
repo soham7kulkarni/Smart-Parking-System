@@ -1,21 +1,38 @@
 import React from "react";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
-import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const libraries = ["places"];
 
 const MapComponent = () => {
+  const [clickedPlace, setClickedPlace] = useState("");
 
-      const navigate = useNavigate();
+  const navigate = useNavigate();
 
-      const handleMarkerClick = (parkingName) => {
-        console.log(parkingName);
-        navigate(`/lots/${encodeURIComponent(parkingName)}`);
+  useEffect(() => {
+  const sessionValue = sessionStorage.getItem("isLoggedIn");
+  const localValue = localStorage.getItem("isLoggedIn");
 
-      };
+  if (sessionValue === null && localValue === null) {
+    alert("Please log in first."); // Alert the user to log in
+    navigate("/"); // Redirect to the home page
+  }
+}, []);
+  
+  useEffect(() => {
+    if (clickedPlace) {
+      setSearchInput(clickedPlace);
+    }
+  }, [clickedPlace]);
+
+  const handleMarkerClick = (parkingName) => {
+    setClickedPlace(parkingName);
+    console.log(parkingName);
+    navigate(`/lots/${encodeURIComponent(parkingName)}`);
+  };
+
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries: libraries,
@@ -30,8 +47,9 @@ const MapComponent = () => {
   const [center, setCenter] = useState(defaultLocation);
   const [parkingResults, setParkingResults] = useState([]);
 
-  const mapRef = React.useRef();
-  const onMapLoad = React.useCallback((map) => {
+  const mapRef = useRef();
+
+  const onMapLoad = useCallback((map) => {
     mapRef.current = map;
     const autoComplete = new window.google.maps.places.Autocomplete(
       document.getElementById("searchInput")
@@ -40,15 +58,16 @@ const MapComponent = () => {
   }, []);
 
   const onPlaceChanged = () => {
-    handleSearch(document.getElementById("searchInput").value);
+    const selectedPlace = document.getElementById("searchInput").value;
+    setClickedPlace(selectedPlace);
+    handleSearch(selectedPlace);
   };
 
   const handleSearch = (temp) => {
-    // debugger;
     axios
       .get(`https://maps.googleapis.com/maps/api/geocode/json`, {
         params: {
-          address: temp === null ? searchInput : temp,
+          address: temp,
           key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         },
       })
@@ -112,30 +131,23 @@ const MapComponent = () => {
         );
         return distanceA - distanceB;
       });
-      // Select the top 3 parkings
-      console.log(sortedParking)
+
       const topThreeParking = sortedParking.slice(0, 3);
       setParkingResults(topThreeParking);
-      // Handle response.data as needed
     } catch (error) {
       console.error("Error fetching nearby parking:", error);
-      // Handle error
     }
   };
 
   const handleSearchInputChange = (e) => {
-    console.log(e.target.value);
     setSearchInput(e.target.value);
   };
 
-  //   console.log(parkingResults)
-
   if (loadError) return "Error";
   if (!isLoaded) return "Maps";
+
   return (
-    <div
-    // style={{ marginTop: "30px", marginBottom: "30px", textAlign: "center" }}
-    >
+    <div>
       <div
         style={{ marginTop: "30px", marginBottom: "20px", textAlign: "center" }}
       >
@@ -144,12 +156,6 @@ const MapComponent = () => {
           type="text"
           value={searchInput}
           onChange={handleSearchInputChange}
-          onFocus={(e) => (e.target.style.border = "2px solid #3498db")}
-          onBlur={(e) =>
-            (e.target.style.border = `2px solid ${
-              searchInput ? "#3498db" : "#ccc"
-            }`)
-          }
           placeholder="Enter location"
           style={{
             padding: "10px",
@@ -161,20 +167,6 @@ const MapComponent = () => {
             width: "300px",
           }}
         />
-        <button
-          onClick={handleSearch}
-          style={{
-            padding: "10px 20px",
-            border: "2px solid #3498db",
-            borderRadius: "20px",
-            backgroundColor: "#3498db",
-            color: "white",
-            cursor: "pointer",
-            marginBottom: "10px",
-          }}
-        >
-          Search
-        </button>
       </div>
       <div
         style={{
@@ -182,7 +174,6 @@ const MapComponent = () => {
           justifyContent: "center",
           alignItems: "center",
           height: "500px",
-          marginLeft: "300px"
         }}
       >
         <GoogleMap

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-import "./History.css";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from "@chakra-ui/react";
 
 const formatTime = (timeString) => {
   const date = new Date(timeString);
@@ -46,7 +50,13 @@ const History = () => {
 
   return (
     <div>
-      <h1>Previous Bookings</h1>
+      <h2>Previous Bookings</h2>
+      {previousBookings.length === 0 ? (
+        <Alert status='warning'>
+          <AlertIcon />
+          Seems your account is yet to make any bookings
+        </Alert>
+      ) : (
       <div className="card-container">
         {previousBookings.map((booking) => (
           <div className="card" key={booking.reservation_id}>
@@ -54,16 +64,25 @@ const History = () => {
               <strong>Lot:</strong> {booking.lot_id}
             </div>
             <div className="card-body">
-              <p><strong>Parking Spot:</strong> {booking.spot_id}</p>
-              <p><strong>Start Time:</strong> {booking.start_time}</p>
-              <p><strong>End Time:</strong> {booking.end_time}</p>
-              <p><strong>Total Amount:</strong> {booking.total_amount}</p>
+              <p>
+                <strong>Parking Spot:</strong> {booking.spot_id}
+              </p>
+              <p>
+                <strong>Start Time:</strong> {booking.start_time}
+              </p>
+              <p>
+                <strong>End Time:</strong> {booking.end_time}
+              </p>
+              <p>
+                <strong>Total Amount:</strong> {booking.total_amount}
+              </p>
             </div>
             {/* Add button here if needed */}
             {/* <button className="card-button">Action</button> */}
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };

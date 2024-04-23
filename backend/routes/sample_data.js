@@ -125,7 +125,7 @@ router.post("/login", function(request, response, next){
                     response.send({ message: "Successful login", token: token, user: user });
             } else 
             {
-                response.status(404).send("Couldn't find user");
+                response.status(404).send("Please enter correct email and password");
             }
         }
     });
@@ -219,7 +219,7 @@ router.get("/previous-bookings/:id", async (request, response, next) => {
   console.log("user", userId);
 
   var query = `
-  SELECT * FROM reservation WHERE user_id = ${userId};`;
+  SELECT * FROM reservation WHERE user_id = ${userId} AND transaction_id != 'pending';`;
 
   console.log(query);
 

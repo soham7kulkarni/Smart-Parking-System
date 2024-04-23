@@ -3,23 +3,49 @@ import { Box, Flex, HStack, Button, useColorModeValue } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn")
-  );
   const location = useLocation();
 
-  useEffect(() => {
-    setIsLoggedIn(localStorage.getItem("isLoggedIn")); // Update isLoggedIn when localStorage changes
-  }, [location, isLoggedIn]);
 
-  const handleLogoutClick = () => {
-    // debugger;
-    localStorage.removeItem("token");
-    localStorage.setItem("isLoggedIn", "false");
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (sessionStorage.getItem("isLoggedIn") !== null) {
+      return sessionStorage.getItem("isLoggedIn");
+    } else if (localStorage.getItem("isLoggedIn") !== null) {
+      return localStorage.getItem("isLoggedIn");
+    }
+  });
+
+
+useEffect(() => {
+  const sessionValue = sessionStorage.getItem("isLoggedIn");
+  const localValue = localStorage.getItem("isLoggedIn");
+
+  if (sessionValue !== null) {
+    setIsLoggedIn(sessionValue);
+  } else if (localValue !== null) {
+    setIsLoggedIn(localValue);
+  }
+}, [location, isLoggedIn]);
+
+const handleLogoutClick = () => {
+  
+  if (sessionStorage.getItem("isLoggedIn") !== null) {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userID");
+    sessionStorage.removeItem("isLoggedIn");
     setIsLoggedIn("false");
-    // console.log("isLoggedIn:", isLoggedIn);
-    navigate("/login");
+  } else {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userID");
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn("false");
+  }
+  navigate("/login");
+};
+
+  const handleSPSClick = () => {
+    navigate("/");
   };
 
   return (
@@ -27,7 +53,22 @@ export default function Navbar() {
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4} py={1}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <HStack spacing={8} alignItems={"center"}>
-            <Box>SPS</Box>
+            <Button
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"black"}
+              bg={"transparent"}
+              onClick={handleSPSClick}
+              _hover={{
+                bg: "transparent",
+              }}
+              rounded={"md"}
+              _focus={{
+                outline: "none",
+              }}
+            >
+              SPS
+            </Button>
           </HStack>
           <Flex alignItems={"center"}>
             {isLoggedIn === "true" ? (
