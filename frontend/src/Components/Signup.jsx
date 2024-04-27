@@ -29,28 +29,33 @@ export default function Signup() {
   const [formData, setFormData] = useState({email:"",password:"",first_name:"",last_name:""});
 
   const handleInputChange = (e) => {
+    console.log(e.target.name, e.target.value)
     setFormData({ ...formData, [e.target.name]: e.target.value });
     
   };
 
-  const handleSignUp = async () => {
-try {
-  const response = await axios.post("http://localhost:5000/signup", formData);
-  console.log(response.data);
-  window.location.href = "/";
+  const handleSignUpClick = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/signup",
+        formData
+      );
+      console.log(response.data);
+      debugger;
 
-} catch (error) {
-  console.error("Signup failed:", error);
-}
+      const userId = response.data.user.user_id;
+      const userName = response.data.user.first_name;
+      const token = response.data.token;
 
-  //   try {
-  //   const response = await axios.post("http://localhost:5000/signup", formData);
-  //   // console.log(response.data);
-  // } catch (error) {
-  //     console.error("Signup failed:", error);
-  //   }
 
-  //   navigate("/")
+      localStorage.setItem("userID", userId);
+      localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", true);
+      localStorage.setItem("username", userName);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
   };
 
   const handleLoginClick = () => {
@@ -91,7 +96,7 @@ try {
                 </FormControl>
               </Box>
               <Box>
-                <FormControl id="last_name">
+                <FormControl id="last_name" >
                   <FormLabel>Last Name</FormLabel>
                   <Input
                     type="text"
@@ -141,7 +146,7 @@ try {
                 _hover={{
                   bg: "blue.500",
                 }}
-                onClick={handleSignUp}
+                onClick={handleSignUpClick}
               >
                 Sign up
               </Button>
@@ -160,62 +165,3 @@ try {
     </Flex>
   );
 }
-
-// const Register = () => {
-//   const [formData, setFormData] = useState({});
-
-//   const navigate = useNavigate();
-
-//   const handleInputChange = (e) => {
-//     e.preventDefault()
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleLogin = async () => {
-//     try {
-//       await axios.post('http://localhost:5000/register', formData).then(response=>{
-//         console.log(response.data);
-//       });
-//       navigate("/Search");
-
-//       // Handle successful login
-//     } catch (error) {
-//       // Handle login error
-//     }
-//   };
-// console.log(formData)
-//   return (
-//     <div className='container'>
-//         <div className='header'>
-//             <div className='text'>Register</div>
-//             <div className = "underlined"> </div>
-//         </div>
-//         <div className='inputs'>
-//             <div className= 'input'>
-//                 <img src={user_icon} alt=""/>
-//                 <input type= "text"  name='first_name' placeholder='First Name' value={formData.first_name} onChange={handleInputChange}/>
-//             </div>
-//             <div className= 'input'>
-//                 <img src={user_icon} alt=""/>
-//                 <input type= "text"  name='last_name' placeholder='Last Name' value={formData.last_name} onChange={handleInputChange}/>
-//             </div>
-//             <div className= 'input'>
-//                 <img src={email_icon} alt=""/>
-//                 <input type= "email"  name='email' placeholder='Email' value={formData.email} onChange={handleInputChange}/>
-//             </div>
-//             <div className= 'input'>
-//                 <img src={password_icon} alt=""/>
-//                 <input type= "password" name="password" placeholder='Password' value={formData.password} onChange={handleInputChange}/>
-//             </div>
-//         </div>
-//         {/* <div className="forgot-password">Can't remember password? <span>Click here!</span></div> */}
-//         <div className="submit-container">
-//             <div>
-//                 <button onClick={handleLogin}>Register</button>
-//             </div>
-//         </div>
-//     </div>
-//   );
-// };
-
-// export default Register;

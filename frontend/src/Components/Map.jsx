@@ -16,8 +16,8 @@ const MapComponent = () => {
   const localValue = localStorage.getItem("isLoggedIn");
 
   if (sessionValue === null && localValue === null) {
-    alert("Please log in first."); // Alert the user to log in
-    navigate("/"); // Redirect to the home page
+    alert("Please log in first.");
+    navigate("/");
   }
 }, []);
   
@@ -147,9 +147,22 @@ const MapComponent = () => {
   if (!isLoaded) return "Maps";
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+      }}
+    >
       <div
-        style={{ marginTop: "30px", marginBottom: "20px", textAlign: "center" }}
+        style={{
+          marginTop: "30px",
+          marginBottom: "30px",
+          textAlign: "center",
+          width: "100%",
+        }}
       >
         <input
           id="searchInput"
@@ -173,16 +186,17 @@ const MapComponent = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "500px",
+          height: "calc(100vh - 120px)",
+          width: "100%",
         }}
       >
         <GoogleMap
           mapContainerStyle={{
-            height: "100%",
-            width: "100%",
+            height: "90vh",
+            width: "100vw",
           }}
           center={center}
-          zoom={14}
+          zoom={16}
           onLoad={onMapLoad}
         >
           {parkingResults.map((parking, index) => (

@@ -1,25 +1,3 @@
-.container {
-    /* position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 400px;
-    /* Adjust the width */
-    /* height: auto; */
-    /* Set height to auto */
-    /* background: #fff; */
-    /* padding: 20px; */
-    /* Add some padding for space */
-    /* border-radius: 10px; */
-    /* Add border radius for rounded corners */
-    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); */
-    /* Add box shadow for depth */ 
-}
-
 .header {
     display: flex;
     flex-direction: column;
@@ -70,7 +48,6 @@
 
 .input input {
     flex: 1;
-    /* Take remaining space */
     height: 100%;
     width: 100%;
     background: transparent;
@@ -78,15 +55,12 @@
     outline: none;
     color: #797979;
     font-size: 16px;
-    /* Adjust font size */
 }
 
 .submit-container {
     display: flex;
     gap: 20px;
-    /* Adjust gap */
     margin-top: 30px;
-    /* Adjust margin */
 }
 
 .submit {
@@ -94,15 +68,11 @@
     justify-content: center;
     align-items: center;
     width: 150px;
-    /* Adjust width */
     height: 40px;
-    /* Adjust height */
     color: #fff;
     background: #4c00b4;
     border-radius: 20px;
-    /* Adjust border radius */
     font-size: 16px;
-    /* Adjust font size */
     font-weight: 700;
     cursor: pointer;
 }

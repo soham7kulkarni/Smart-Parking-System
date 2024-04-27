@@ -77,8 +77,6 @@ const History = () => {
                 <strong>Total Amount:</strong> {booking.total_amount}
               </p>
             </div>
-            {/* Add button here if needed */}
-            {/* <button className="card-button">Action</button> */}
           </div>
         ))}
       </div>
