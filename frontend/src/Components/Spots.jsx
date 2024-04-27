@@ -14,12 +14,6 @@ const Spots = (props) => {
 
   const navigate = useNavigate();
 
-  // const handleBook = () => {
-  //   navigate("/Book");
-  // };
-
-
-
   useEffect(()=>{
     const getLot = async () => {
     try {

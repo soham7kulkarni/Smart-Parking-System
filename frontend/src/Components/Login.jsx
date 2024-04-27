@@ -25,7 +25,6 @@ export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const { setUserId } = useUser();
 
   const handleSignUpClick = () => {
@@ -43,22 +42,18 @@ export default function Login() {
         formData
       );
       const userId = response.data.user.user_id;
+      const userName = response.data.user.first_name;
+      const token = response.data.token;
+      
       console.log(userId);
       setUserId(userId);
-
-      const token = response.data.token;
-
-      if (rememberMe) {
-        localStorage.setItem("userID", userId);
-        localStorage.setItem("token", token);
-        localStorage.setItem("isLoggedIn", true);
-      } else {
-        sessionStorage.setItem("userID", userId);
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("isLoggedIn", true);
-      }
-
+      
+      localStorage.setItem("userID", userId);
+      localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", true);
+      localStorage.setItem("username", userName);
       navigate("/Search");
+
     } catch (error) {
       if (error.response && error.response.status === 404) {
         alert("User not found. Please enter correct email and password.");
@@ -115,9 +110,6 @@ export default function Login() {
                 align={"start"}
                 justify={"space-between"}
               >
-                <Checkbox onChange={(e) => setRememberMe(e.target.checked)}>
-                  Remember me
-                </Checkbox>
                 <Text color={"blue.400"}>Forgot password?</Text>
               </Stack>
               <Button

@@ -12,8 +12,11 @@ import Navbar from './Components/Navbar';
 import Success from "./Components/Success";
 import Cancel from "./Components/Cancel";
 import History from"./Components/History";
-import './App.css';
-import { useEffect } from "react";
+import Dashboard from "./Components/Dashboard";
+import Carousel from "./Components/Carousel";
+import Profile from "./Components/Profile";
+import Pricing from "./Components/Pricing";
+import About from "./Components/About";
 import LotWithImage from "./Components/Lots";
 import { UserProvider } from "./Components/UserContext";
 
@@ -38,6 +41,11 @@ function App() {
               <Route path="/Success" Component={Success} />
               <Route path="/Cancel" Component={Cancel} />
               <Route path = "/History" Component={History} />
+              <Route path = "/Dashboard" Component={Dashboard} />
+              <Route path = "/Carousel" Component={Carousel} />
+              <Route path = "/Profile" Component={Profile} />
+              <Route path = "/Pricing" Component={Pricing} />
+              <Route path = "/About" Component={About} />
               </Routes>
             </div>
           </UserProvider>

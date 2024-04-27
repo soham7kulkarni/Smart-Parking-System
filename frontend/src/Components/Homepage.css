@@ -1,11 +1,28 @@
 .center-screen {
     display: flex;
+    flex-direction: row ;
+    
     justify-content: center;
-    align-items: flex-start;
-    height: 90vh;
+    flex: 1;
+    align-items: center;
+    height: 70%;
     padding-top: 5vh;
+    position: relative;
+    z-index: 9999;
+    padding: 40px;
 }
 
 .inputs {
     text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-flow: column wrap;
+    margin-top: 20px;
+}
+
+.container p {
+    margin: 0;
+    padding: 10px;
 }

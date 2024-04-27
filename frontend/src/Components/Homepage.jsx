@@ -1,59 +1,80 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import './Homepage.css';
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Container,
+  Flex,
+  Heading,
+  Link,
+  Spacer,
+  Stack,
+  useBreakpointValue,
+  Box,
+} from "@chakra-ui/react";
+import logo from "./Assets/logo.png";
 
 const Homepage = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const login = localStorage.getItem("isLoggedIn");
-    setIsLoggedIn(login);
-  }, []);
-
-  const handleNewBookingClick = () => {
-    if (isLoggedIn === "true") {
-      navigate("/Search");
-    } else {
-      navigate("/login");
-    }
-  };
-
-  const handlePreviousBookingClick = () => {
-    if (isLoggedIn === "true") {
-      navigate("/history");
-    } else {
-      navigate("/login");
-    }
-  };
+  const direction = useBreakpointValue({ base: "column", md: "row" });
 
   return (
-    <div className="center-screen">
-      <div className="inputs">
-        <div className="row">
-          <div className="col text-center">
-            <button
-              className="btn btn-primary"
-              style={{
-                marginRight: "20px",
-                backgroundColor: "#3498db",
-                border: "none",
-              }}
-              onClick={handleNewBookingClick}
-            >
-              New Booking
-            </button>
-            <button
-              className="btn btn-secondary"
-              style={{ backgroundColor: "#2ecc71", border: "none" }}
-              onClick={handlePreviousBookingClick}
-            >
-              Previous Booking
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Container
+      maxW="100%"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      marginTop={8}
+    >
+      <Stack direction={direction} spacing={16} alignItems="center">
+        <img src={logo} alt="Logo" />
+        <Flex direction="column" alignItems="center">
+          <Heading
+            as="h3"
+            textAlign="center"
+            mt={4}
+            fontSize="3xl"
+            fontWeight="bold"
+            color="#313B72"
+          >
+            Parking Lots & Structures
+          </Heading>
+          <Link
+            href="https://parking.fullerton.edu/documents/maps/CSUF%20Campus%20Map%201.23.pdf"
+            isExternal
+            mt={4}
+            fontSize="lg"
+            color="blue.500"
+            _hover={{ textDecoration: "underline" }}
+          >
+            Downloadable Parking Map
+          </Link>
+          <Link
+            href="https://parking.fullerton.edu/documents/CampusMapGridLines.pdf"
+            isExternal
+            mt={2}
+            fontSize="lg"
+            color="blue.500"
+            _hover={{ textDecoration: "underline" }}
+          >
+            Downloadable Campus Map
+          </Link>
+          <motion.div
+            animate={{
+              y: [-10, 10],
+              transition: {
+                repeat: Infinity,
+                duration: 1,
+                repeatType: "reverse",
+              },
+            }}
+          >
+            <Box mt={6} p={4} bg="#7EE081" borderRadius="md" textAlign="center">
+              <p>Login to book a spot!</p>
+              <p>Parking is free on Friday nights and weekends.</p>
+            </Box>
+          </motion.div>
+          <Spacer mt={6} />
+        </Flex>
+      </Stack>
+    </Container>
   );
 };
 

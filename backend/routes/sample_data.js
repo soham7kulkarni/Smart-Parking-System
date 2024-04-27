@@ -61,8 +61,8 @@ router.post("/signup", function(request, response, next){
 
     var query = `
     INSERT INTO users 
-    (email, password, first_name, last_name)
-    VALUES ("${email}", "${password}", "${first_name}", "${last_name}")
+    (email, password, first_name, last_name, phone, address, birth_date)
+    VALUES ("${email}", "${password}", "${first_name}", "${last_name}", "+1234567890", "123 Main St, Fullerton, USA", "1990-01-01")
     `;
 
     database.query(query, function(error, data){
@@ -88,6 +88,15 @@ router.post("/signup", function(request, response, next){
                 } else {
                     console.log("Successful registration:");
                     console.log(selectResult[0]);
+                    const user = selectResult[0];
+                    const token = jwt.sign({
+                            user_id: user.user_id,
+                            email: user.email 
+                        }, process.env.ACCESS_TOKEN_SECRET
+                        // { expiresIn: '24h' }
+                        );
+                    response.send({ message: "User created successfully", token: token, user: user });
+
                 }
             });
         }
@@ -131,10 +140,26 @@ router.post("/login", function(request, response, next){
     });
 });
 
+router.get("/fetch-user-data/:userID", function(request, response, next){
+  const user_id = request.params.userID;
+  console.log(user_id);
+  var query = `
+  SELECT * FROM users WHERE user_id = ${user_id}
+  `
+
+  database.query(query, function(error, data){
+    if (error) {
+            throw error;
+      } else {
+        console.log(data);
+        const user = data[0];
+        response.send({ message: "Successfully fetched user data", user: user });
+      }
+  })
+})
+
 
 router.get("/lots/:id", verifyToken, function(request, response, next){
-
-    // Fetching top 3 parking lots which are near to the location (Maps API)
 
     const id  = request.params.id; // Extracting id from params directly
     console.log(id);

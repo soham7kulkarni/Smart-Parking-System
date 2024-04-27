@@ -44,7 +44,7 @@ const Book = (props) => {
     "LOT F": 1.75,
     "LOT G": 3.5,
     "LOT S": 2,
-    "Nutwood Parking Structure": 4,
+    "Nutwood Parking Structure": 3.75,
     "Parking D": 3,
     "State College Parking Structure": 4.25,
   };
@@ -53,7 +53,7 @@ const Book = (props) => {
     const start = new Date(startTime);
     const end = new Date(endTime);
     const durationInMillis = end - start;
-    const durationInHours = durationInMillis / (1000 * 60 * 60); // Convert milliseconds to hours
+    const durationInHours = durationInMillis / (1000 * 60 * 60); // Converting milliseconds to hours
     return durationInHours;
   };
 
@@ -63,7 +63,6 @@ const Book = (props) => {
     if (rate) {
       return rate * totalDuration;
     } else {
-      // Handle case where lotId is not found in lotRates dictionary
       return 0;
     }
   };
@@ -72,16 +71,14 @@ const Book = (props) => {
     console.log(startTime);
     console.log(endTime);
 
-    // Handle payment logic here
     console.log("Payment processing...");
     
     const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-    // Calculate total duration
     const totalDuration = calculateDuration(startTime, endTime);
     console.log(totalDuration);
 
-    // Calculate total price
+
     const totalPrice = calculateTotalPrice(id, totalDuration);
 
 const bodyData = {
@@ -124,32 +121,6 @@ const bodyData = {
     if (result.error) {
       console.log(result.error);
     }
-    // Payment succeeded, call backend API to store booking details
-    // const storeBookingResponse = await fetch(
-    //   "http:://localhost:5000/store-booking-details",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       id,
-    //       spot_id,
-    //       userId,
-    //       startTime,
-    //       endTime,
-    //       totalPrice,
-    //       typeOfVehicle,
-    //       license,
-    //     }),
-    //   }
-    // );
-
-    // if (storeBookingResponse.ok) {
-    //   console.log("Booking details stored successfully!");
-    // } else {
-    //   console.error("Failed to store booking details.");
-    // }
   };
 
   return (
