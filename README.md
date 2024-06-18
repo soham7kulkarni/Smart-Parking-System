@@ -14,6 +14,9 @@ The "SPS" is a web app which allows users to book Parking Spot acorss the univer
 - View previous transactions in the dashboard
 
 
+## Architecture
+![Architecture](https://github.com/soham7kulkarni/Smart-Parking-System/assets/63456618/422c6d6f-6191-41f1-88a5-9d66192fcb06)
+
 ## Installation
 
 To install frontend dependencies
